@@ -12,7 +12,6 @@ const projectSchema=new mongoose.Schema({
         required:true
     },
 
-
     projectAdmin:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'User',
