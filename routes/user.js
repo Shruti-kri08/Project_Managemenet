@@ -1,13 +1,19 @@
 require('dotenv').config()
 const express = require('express')
-const Router = express.Router()
+const router = express.Router()
 const bcrypt = require('bcrypt')
 const mongoose = require('mongoose')
 const cloudinary = require('cloudinary').v2
 const jwt = require('jsonwebtoken')
 const User=require('../models/User')
+const rateLimit = require("express-rate-limit");
 
-
+const limiter = rateLimit({
+windowMs: 15 * 60 * 1000, // 15 minutes
+max: 3, 
+message: "Too many requests from this IP, please try again later.",
+standardHeaders: true
+});
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -17,7 +23,7 @@ cloudinary.config({
 
 
 // signup api 
-Router.post('/signup',async(req,res)=>{
+router.post('/signup',async(req,res)=>{
     try
     {
         const data=await User.find({email:req.body.email})
@@ -53,7 +59,7 @@ Router.post('/signup',async(req,res)=>{
 })
 
 //login api
-Router.post('/login',async(req,res)=>{
+router.post('/login',limiter,async(req,res)=>{
   try{
     const user= await User.find({email:req.body.email})
   if(user.length==0){
@@ -90,4 +96,4 @@ Router.post('/login',async(req,res)=>{
 })
 
 
-module.exports = Router
+module.exports = router

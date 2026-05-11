@@ -1,6 +1,6 @@
 require('dotenv').config()
 const express = require('express')
-const router = express.router()
+const router = express.Router()
 const bcrypt = require('bcrypt')
 const mongoose = require('mongoose')
 const cloudinary = require('cloudinary').v2
