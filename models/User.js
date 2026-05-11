@@ -25,5 +25,10 @@ const userSchema=mongoose.Schema({
     imageId:{
         type:String,
         default:null
+    },
+    createdProject:{
+        type:Number
     }
+
 })
+module.exports=mongoose.model('User',userSchema)
