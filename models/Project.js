@@ -1,32 +1,5 @@
 const mongoose=require('mongoose')
-const collaboratorSchema=new mongoose.Schema({
-        userId:{
-            type:mongoose.Schema.Types.ObjectId,
-            ref:'User'
-        },
 
-        adminId:{
-            type:mongoose.Schema.Types.ObjectId,
-            ref:'User'
-        },
-
-        projectId:{
-            type:mongoose.Schema.Types.ObjectId,
-            ref:'Project'
-        },
-        isApproved:{
-            type: String,
-             enum: [
-                'Yes',
-                'No'
-             ],
-             required:true
-        }     
-
-},
-{
-    timestamps:'true'
-})
 const projectSchema=new mongoose.Schema({
     projectName:{
         type:String,
@@ -50,6 +23,20 @@ const projectSchema=new mongoose.Schema({
          type:mongoose.Schema.Types.ObjectId,
         ref:'Collaborator'
     }],
+    tasks:[{
+        type:String,
+
+    }],
+
+    status:{
+    type:String,
+    enum:[
+        'Pending',
+        'In Progress',
+        'Completed'
+    ],
+    default:'Pending'
+}
 
 },{
     timestamps:true
