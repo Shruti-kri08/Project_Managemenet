@@ -15,20 +15,21 @@ const userSchema=mongoose.Schema({
     password:{
         type:String,
         required:true,
-        trim:true,
         minlength:8
     },
     imageUrl:{
         type:String,
-        default:null
     },
     imageId:{
         type:String,
-        default:null
     },
-    createdProject:{
-        type:Number
-    }
-
+    createdProjects:[{
+        type:mongoose.Schema.Types.ObjectId,
+         ref:'Project',
+    }],
+    collaboratedProjects:[{
+         type:mongoose.Schema.Types.ObjectId,
+         ref:'Project',
+    }]
 })
 module.exports=mongoose.model('User',userSchema)
