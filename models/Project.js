@@ -1,4 +1,5 @@
 const mongoose=require('mongoose')
+const User = require('./User')
 
 const projectSchema=new mongoose.Schema({
     projectName:{
@@ -13,15 +14,14 @@ const projectSchema=new mongoose.Schema({
         required:true
     },
 
-    projectAdmin:{
+    adminId:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'User',
-        required:true
     },
 
     collaborators:[{
          type:mongoose.Schema.Types.ObjectId,
-        ref:'Collaborator'
+        ref:'User'
     }],
     tasks:[{
         type:String,

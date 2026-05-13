@@ -21,7 +21,9 @@ const collaboratorSchema=new mongoose.Schema({
                 'Yes',
                 'No'
              ],
-             required:true
+             required:true,
+             default:'No'
+
         }     
 
 },
