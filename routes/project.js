@@ -78,7 +78,7 @@ router.delete('/delete/:projectId', async (req, res) => {
 })
 
 // api for add cllaborator in a project 
-Router.post('/add-collaborator/:projectId', async(req,res)=>{
+router.post('/add-collaborator/:projectId', async(req,res)=>{
     try
     {
         const token = req.headers.authorization.split(" ")[1]
@@ -161,6 +161,99 @@ Router.post('/add-collaborator/:projectId', async(req,res)=>{
      }
 
     })    
+
+
+    // update project by owner
+   router.put('/updateProject/:projectId', async(req,res)=>{
+    try{
+
+        const token = req.headers.authorization.split(" ")[1]
+        const tokenData = jwt.verify(token , process.env.SEC_KEY)
+
+        // checking project exist or not
+        const project = await Project.findById(req.params.projectId)
+
+        if(!project){
+            return res.status(500).json({
+                message:"project not exist"
+            })
+        }
+
+        // checking owner
+        if(project.owner != tokenData.userId){
+            return res.status(500).json({
+                message:"only owner can update project"
+            })
+        }
+
+        // update 
+        const newProject = ({
+            projectName : req.body.projectName,
+            description : req.body.description,
+            status : req.bosy.status
+        })
+
+        
+        // remove collaborator
+        if(req.body.removeCollaboratorId){
+
+            project.collaborators = project.collaborators.filter(cId=>{
+                return cId != req.body.removeCollaboratorId
+            })
+
+            await Collaborator.deleteOne({
+                userId:req.body.removeCollaboratorId,
+                projectId:req.params.projectId
+            })
+        }
+
+        // update assigned task
+        if(req.body.taskId){
+
+            const task = await task.findById(req.body.taskId)
+
+            if(task){
+
+                // update task title
+                if(req.body.taskTitle){
+                    task.title = req.body.taskTitle
+                }
+
+                // update task description
+                if(req.body.taskDescription){
+                    task.description = req.body.taskDescription
+                }
+
+                // update task status
+                if(req.body.taskStatus){
+                    task.status = req.body.taskStatus
+                }
+
+                // update assigned collaborator
+                if(req.body.assignTo){
+                    task.assignTo = req.body.assignTo
+                }
+
+                await task.save()
+            }
+        }
+
+        await project.save()
+
+        res.status(200).json({
+            message:"project updated successfully",
+            project:project
+        })
+
+    }
+    catch(error)
+    {
+
+        res.status(500).json({
+            message:error.message
+        })
+    }
+})
     
 
 

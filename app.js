@@ -16,7 +16,7 @@ const collaboratorRoutes=require('./routes/collaborator')
 const connectWithDatabase=async()=>{
     try{
        await mongoose.connect(process.env.MONGODB_URL)
-       console.log("connect with database..");
+       console.log("connected with database..");
        
     }
     catch(err)
