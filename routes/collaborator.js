@@ -66,51 +66,62 @@ router.post('/invite/:byId/:projectId', async (req, res) => {
 router.post('/isAproved/:projectId', async (req, res) => {
     try {
         const token = req.headers.authorization.split(" ")[1]
-        const tokenData =jwt.verify(token, process.env.SEC_KEY)
+        const tokenData = jwt.verify(token, process.env.SEC_KEY)
 
         //checking project exist or not
-        const isExist = await Project.findById(req.params.projectId)
-        if (!isExist) {
+        const project= await Project.findById(req.params.projectId)
+        if (!project) {
             return res.status(500).json({ message: "project not exist" })
         }
-        const isInvited = await Collaborator.findOne({
-            userId: tokenData.userId,
-            projectId: req.params.projectId
+        console.log(project);
+        console.log(tokenData.userId);
+        console.log(req.params.projectId);
+        
+        
+        const collaborator=await Collaborator.findOne({
+            userId:tokenData.userId,
+            projectId:req.params.projectId
         })
-        if (!isInvited) {
+        console.log(collaborator);
+        
+        if (!collaborator) {
             return res.status(500).json({ message: "not invited" })
         }
-        else {
-            if (isInvited.isApproved == 'Yes') {
+        // console.log(collaborator.isApproved);
+        
+        
+         if (collaborator.isApproved == 'Yes') {
                 await Collaborator.deleteOne({
                     userId: tokenData.userId,
                     projectId: req.params.projectId
                 })
-                isExist.collaborators=isExist.collaborators.filter(cId=>{
+                project.collaborators=project.collaborators.filter(cId=>{
                    return cId.toString()!==tokenData.userId
                 })
-                await isExist.save()
-                  res.status(200).json({project:isExist})
+                await collaborator.save()
+                 return res.status(200).json({project:collaborator})
                 
 
 
-            }
-            else {
-                isInvited.isApproved = 'Yes'
-                isExist.collaborators.push(tokenData.userId)
-               await isInvited.save()
-               await isExist.save()
-                res.status(200).json({project:isExist})
-
-            }
         }
+
+                collaborator.isApproved = 'Yes'
+                project.collaborators.push(tokenData.userId)
+               await collaborator.save()
+               await project.save()
+                res.status(200).json({project:project})
+
+            
     }
     catch (err) {
+         console.log(err);
+           
         res.status(500).json({
             error: err
+            
         })
-    }
-
+}
 })
+
 
 module.exports = router
