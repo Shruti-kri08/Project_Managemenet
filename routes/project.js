@@ -77,6 +77,92 @@ router.delete('/delete/:projectId', async (req, res) => {
     }
 })
 
+// api for add cllaborator in a project 
+Router.post('/add-collaborator/:projectId', async(req,res)=>{
+    try
+    {
+        const token = req.headers.authorization.split(" ")[1]
+        const tokenData = jwt.verify(token, process.env.SEC_KEY)
+        
+        // find user
+        const reciver = await User.findById({userId})
+        const email = await User.find({email:req.body.email})
+        if(!email)
+        {
+            return res.status(500).json({
+                error : 'User not found...'
+            })
+        }
+
+        // find project
+
+        const project = await Project.find(req.params.projectId)
+        if(!project)
+        {
+            return res.status(500).json({
+                error : 'Project not found....'
+            })
+        }
+        //  check who add collaborator
+
+        const owner = req.user.Id
+        if(owner !== project.owner.userId)
+        {
+            return res.status(500).json({
+                error : 'only owner can add collaborator.....'
+            })
+        }
+
+        const alreadyCollaborator = project.collaborators.find(
+            collab => collab.user == receiver._id
+        )
+
+        if(alreadyCollaborator){
+            return res.status(400).json({
+                success:false,
+                message:"User already collaborator"
+            })
+        }
+
+        // already request sent check
+        const alreadyRequest = await CollaborationRequest.findOne({
+            project:req.params.projectId,
+            receiver:receiver._id,
+            status:"pending"
+        })
+
+        if(alreadyRequest){
+            return res.status(400).json({
+                success:false,
+                message:"Request already sent"
+            })
+        }
+
+        // create request
+        const request = await CollaborationRequest.create({
+            project:req.params.projectId,
+            owner:ownerId,
+            receiver:receiver._id,
+            role:req.body.role,
+        })
+        res.status(200).json({
+            msg : 'Request sent successfully'
+        })
+
+     } 
+
+     catch(err)
+     {
+        console.log(err)
+        res.status(500).json({
+          error : err
+           
+        })
+     }
+
+    })    
+    
+
 
 
 module.exports = router
