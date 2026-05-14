@@ -73,16 +73,16 @@ router.post('/isAproved/:projectId', async (req, res) => {
         if (!project) {
             return res.status(500).json({ message: "project not exist" })
         }
-        console.log(project);
-        console.log(tokenData.userId);
-        console.log(req.params.projectId);
+        // console.log(project);
+        // console.log(tokenData.userId);
+        // console.log(req.params.projectId);
         
         
         const collaborator=await Collaborator.findOne({
             userId:tokenData.userId,
             projectId:req.params.projectId
         })
-        console.log(collaborator);
+        // console.log(collaborator);
         
         if (!collaborator) {
             return res.status(500).json({ message: "not invited" })
@@ -98,8 +98,8 @@ router.post('/isAproved/:projectId', async (req, res) => {
                 project.collaborators=project.collaborators.filter(cId=>{
                    return cId.toString()!==tokenData.userId
                 })
-                await collaborator.save()
-                 return res.status(200).json({project:collaborator})
+                await project.save()
+                 return res.status(200).json({project:project})
                 
 
 
