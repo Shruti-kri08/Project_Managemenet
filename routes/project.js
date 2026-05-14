@@ -77,6 +77,22 @@ router.delete('/delete/:projectId', async (req, res) => {
     }
 })
 
-
+//APIs to get all Admin-projects
+router.get('/my-projects',async(req,res)=>{
+    try{
+        const token = req.headers.authorization.split(" ")[1]
+    const tokenData = jwt.verify(token, process.env.SEC_KEY)
+    const myProjects=await Project.find({adminId:tokenData.userId})
+    if(myProjects.length==0){
+        return res.status(500).json({mesasge:"No projects created!"})
+    }
+    res.status(200).json({myProjects:myProjects})
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).json({error:err})
+        
+    }
+})
 
 module.exports = router
