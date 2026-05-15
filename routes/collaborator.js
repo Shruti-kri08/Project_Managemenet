@@ -98,8 +98,13 @@ router.post('/isAproved/:projectId', async (req, res) => {
             project.collaborators = project.collaborators.filter(cId => {
                 return cId.toString() !== tokenData.userId
             })
+<<<<<<< Updated upstream
             await project.save()
             return res.status(200).json({ project: project })
+=======
+            await collaborator.save()
+            return res.status(200).json({ project: collaborator })
+>>>>>>> Stashed changes
         }
 
         collaborator.isApproved = 'Yes'
@@ -108,11 +113,17 @@ router.post('/isAproved/:projectId', async (req, res) => {
         await project.save()
         res.status(200).json({ project: project })
 
+<<<<<<< Updated upstream
 
     }
     catch (err) {
         console.log(err);
 
+=======
+    }
+    catch (err) {
+        console.log(err);
+>>>>>>> Stashed changes
         res.status(500).json({
             error: err
 
@@ -121,7 +132,10 @@ router.post('/isAproved/:projectId', async (req, res) => {
 })
 
 
+<<<<<<< Updated upstream
 
 
 
+=======
+>>>>>>> Stashed changes
 module.exports = router
