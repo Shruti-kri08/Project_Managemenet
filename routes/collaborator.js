@@ -69,58 +69,55 @@ router.post('/isAproved/:projectId', async (req, res) => {
         const tokenData = jwt.verify(token, process.env.SEC_KEY)
 
         //checking project exist or not
-        const project= await Project.findById(req.params.projectId)
+        const project = await Project.findById(req.params.projectId)
         if (!project) {
             return res.status(500).json({ message: "project not exist" })
         }
         // console.log(project);
         // console.log(tokenData.userId);
         // console.log(req.params.projectId);
-        
-        
-        const collaborator=await Collaborator.findOne({
-            userId:tokenData.userId,
-            projectId:req.params.projectId
+
+
+        const collaborator = await Collaborator.findOne({
+            userId: tokenData.userId,
+            projectId: req.params.projectId
         })
         // console.log(collaborator);
-        
+
         if (!collaborator) {
             return res.status(500).json({ message: "not invited" })
         }
         // console.log(collaborator.isApproved);
-        
-        
-         if (collaborator.isApproved == 'Yes') {
-                await Collaborator.deleteOne({
-                    userId: tokenData.userId,
-                    projectId: req.params.projectId
-                })
-                project.collaborators=project.collaborators.filter(cId=>{
-                   return cId.toString()!==tokenData.userId
-                })
-                await project.save()
-                 return res.status(200).json({project:project})
-                
 
 
+        if (collaborator.isApproved == 'Yes') {
+            await Collaborator.deleteOne({
+                userId: tokenData.userId,
+                projectId: req.params.projectId
+            })
+            project.collaborators = project.collaborators.filter(cId => {
+                return cId.toString() !== tokenData.userId
+            })
+            await project.save()
+            return res.status(200).json({ project: project })
         }
 
-                collaborator.isApproved = 'Yes'
-                project.collaborators.push(tokenData.userId)
-               await collaborator.save()
-               await project.save()
-                res.status(200).json({project:project})
+        collaborator.isApproved = 'Yes'
+        project.collaborators.push(tokenData.userId)
+        await collaborator.save()
+        await project.save()
+        res.status(200).json({ project: project })
 
-            
+
     }
     catch (err) {
-         console.log(err);
-           
+        console.log(err);
+
         res.status(500).json({
             error: err
-            
+
         })
-}
+    }
 })
 
 
