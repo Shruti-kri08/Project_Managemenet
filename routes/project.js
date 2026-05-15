@@ -78,43 +78,22 @@ router.delete('/delete/:projectId', async (req, res) => {
     }
 })
 
-//Get all Admin-projects
-router.get('/my-projects', async (req, res) => {
-    try {
+//APIs to get all Admin-projects
+router.get('/my-projects',async(req,res)=>{
+    try{
         const token = req.headers.authorization.split(" ")[1]
-        const tokenData = jwt.verify(token, process.env.SEC_KEY)
-        const myProjects = await Project.find({ adminId: tokenData.userId })
-        if (myProjects.length == 0) {
-            return res.status(500).json({ mesasge: "No projects created!" })
-        }
-        res.status(200).json({ myProjects: myProjects })
+    const tokenData = jwt.verify(token, process.env.SEC_KEY)
+    const myProjects=await Project.find({adminId:tokenData.userId})
+    if(myProjects.length==0){
+        return res.status(500).json({mesasge:"No projects created!"})
     }
-    catch (err) {
+    res.status(200).json({myProjects:myProjects})
+    }
+    catch(err){
         console.log(err);
-        res.status(500).json({ error: err })
-
+        res.status(500).json({error:err})
+        
     }
-})
-
-//Get all collaborated-projects
-router.get('/collaborated-projects', async (req, res) => {
-    try {
-        const token = req.headers.authorization.split(" ")[1]
-        const tokenData = jwt.verify(token, process.env.SEC_KEY)
-        const collaboratedProjects = await Collaborator.find({ userId: tokenData.userId  ,isApproved:'Yes'}).populate('projectId')
-        if (collaboratedProjects.length == 0) {
-            return res.status(400).json({
-                message: "You are not collaborating on any project"
-            })
-        }
-        res.status(200).json({ collaboratedProjects })
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).json({ error: err })
-
-    }
-
 })
 
 module.exports = router
