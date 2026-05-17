@@ -11,6 +11,7 @@ const rateLimit = require("express-rate-limit");
 const userRoutes=require('./routes/user')
 const projectRoutes=require('./routes/project')
 const collaboratorRoutes=require('./routes/collaborator')
+const taskRoutes=require('./routes/task')
 
 //Connect DB
 const connectWithDatabase=async()=>{
@@ -40,6 +41,7 @@ app.use(fileUpload(
 app.use('/user',userRoutes)
 app.use('/project',projectRoutes)
 app.use('/collaborator',collaboratorRoutes)
+app.use('/task',taskRoutes)
 
 
 module.exports=app

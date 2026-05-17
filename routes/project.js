@@ -95,5 +95,27 @@ router.get('/my-projects',async(req,res)=>{
         
     }
 })
+//Get all collaborated-projects
+router.get('/collaborated-projects', async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(" ")[1]
+        const tokenData = jwt.verify(token, process.env.SEC_KEY)
+        const collaboratedProjects = await Collaborator.find({ userId: tokenData.userId  ,isApproved:'Yes'}).populate('projectId')
+        if (collaboratedProjects.length == 0) {
+            return res.status(400).json({
+                message: "You are not collaborating on any project"
+            })
+        }
+        res.status(200).json({ collaboratedProjects })
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ error: err })
+
+    }
+
+})
+
+
 
 module.exports = router
