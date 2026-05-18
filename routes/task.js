@@ -64,4 +64,74 @@ const savedTask=await Task.findById(result._id).populate('projectId')
 
 })
 
+// update task
+router.put('/updateTask/:taskId', async(req,res)=>{
+    try{
+
+        const token = req.headers.authorization.split(" ")[1]
+        const tokenData = jwt.verify(token , process.env.SEC_KEY)
+
+        // checking task exist or not
+        const task = await task.findById(req.params.taskId)
+
+        if(!task){
+            return res.status(500).json({
+                message:"task not exist"
+            })
+        }
+
+        // finding project
+        const project = await Project.findById(task.projectId)
+
+        if(!project){
+            return res.status(500).json({
+                message:"project not exist"
+            })
+        }
+
+        // checking owner
+        if(tokenData.userId != project.adminId){
+            return res.status(500).json({
+                message:"only owner can update task"
+            })
+        }
+
+        const newTask = {
+            task : req.body.task,
+            description : req.body.description,
+            status : req.body.status
+        }
+        
+        // update file
+      if(req.files)
+      {
+         cloudinary.uploader.destroy(task.imageId)
+         const uploadResult = await cloudinary.uploader.upload(req.files.photo.tempFilePath)
+         newTask["imageId"]= uploadResult.public_id,
+         newTask["imageUrl"] = uploadResult.secure_url
+      }
+      else
+      {
+         newTask["imageId"] = task.imageId,
+         newTask["imageUrl"] = task.imageUrl
+      }
+
+       
+        await newTask.save()
+
+        res.status(200).json({
+            message:"task updated successfully",
+            task:newTask
+        })
+
+    } 
+    catch(error)
+    {
+
+        res.status(500).json({
+           error : err
+        })
+    }
+})
+
 module.exports=router
