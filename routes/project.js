@@ -132,40 +132,37 @@ router.put('/updateProject/:projectId', async (req, res) => {
                 message: "project not exist"
             })
         }
+         
 
         // checking owner
-        if (tokenData.userId != project.adminId) {
+        if (tokenData.userId != project.adminId.toString()) {
+             console.log(project);
             return res.status(500).json({
                 message: "only owner can update project"
-            })
-        }
+            })}
+            
+        //   console.log(project);
+          
+            project.projectName = req.body.projectName,
+            project.description= req.body.description,
+            project.status= req.body.status,
+        
 
-        const newProject = {
-            projectName : req.body.projectName,
-            title: req.body.title,
-            description: req.body.description,
-            status: req.body.status,
-        }
-
-
-
-        await newProject.save()
+        await project.save()
 
         res.status(200).json({
             message: "project updated successfully",
-            project: newProject
+            project: project
         })
-
     }
 
     catch (error) {
-
-        res.status(500).json({
+        console.log(error);
+        res.status(500).json({        
             message: error.message
         })
     }
-}
-)
+})
 
 
 module.exports = router
