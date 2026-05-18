@@ -3,8 +3,9 @@ const Project = require('./Project')
 const taskSchema=mongoose.Schema({
     task:{type:String,required:true,tirm:true},
     description:{type:String,requried:true,trim:true},
-    createdBy:{type:mongoose.Schema.Types.ObjectId,ref:'Project'},
-    assignTo:[{type:mongoose.Schema.Types.ObjectId ,ref:'Project'} ],
+    createdBy:{type:mongoose.Schema.Types.ObjectId,ref:'User'},
+    projectId:{type:mongoose.Schema.Types.ObjectId,ref:'Project'},
+    assignTo:[{type:mongoose.Schema.Types.ObjectId ,ref:'User'} ],
     imageUrl:{type:String,required:true},
     imageId:{type:String,required:true},    
     status:{type:String,required:true,tirm:true ,default:"not started yet"},   
