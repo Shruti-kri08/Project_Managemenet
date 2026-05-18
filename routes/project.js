@@ -23,7 +23,8 @@ router.post('/create', async (req, res) => {
             adminId: tokenData.userId,
 
         })
-        const project = await createProject.save()
+        const result = await createProject.save()
+       const project=await Project.findById(result._id).populate('adminId','fullName email')
         res.status(200).json({
             message: "A new project created!!",
             project: project

@@ -38,16 +38,27 @@ router.post('/create/:projectId',async(req,res)=>{
     task:req.body.task,
     description:req.body.description,
     createdBy:tokenData.userId,
+    projectId:req.params.projectId,
     imageUrl:uploadImage.secure_url,
     imageId:uploadImage.public_id
 
   })
   const result=await task.save()
-  res.status(200).json({message:"task uploaded successfullt..!!",
-    task:result
-  })
+  project.tasks.push(result._id )
+   await  project.save()
 
-   
+const savedTask=await Task.findById(result._id).populate('projectId')
+
+    
+  
+ 
+
+
+  res.status(200).json({message:"task uploaded successfullt..!!",
+      task:savedTask
+  })
+  
+
    
     
 
